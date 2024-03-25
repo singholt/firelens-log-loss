@@ -1,0 +1,36 @@
+services:
+  logger:
+    image: poc/logger:local
+    container_name: logger
+    command:
+      - "10000"
+      - "0"
+      - "1"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-async-connect: "true"
+        fluentd-sub-second-precision: "true"
+        fluentd-address: "unix:///tmp/fluentd.sock"
+
+  shipper:
+    image: fluent/fluent-bit:2.2.2
+    container_name: shipper
+    depends_on:
+      - logger
+    volumes:
+      - $PWD/fluent-bit/compose-conf.conf:/fluent-bit/etc/fluent-bit.conf
+      - /tmp:/var/run
+
+# Test it using a basic netcat socket
+#  shipper:
+#    image: bash
+#    container_name: shipper
+#    depends_on:
+#      - logger
+#    command:
+#      - "bash"
+#      - "-c"
+#      - "apk add netcat-openbsd && nc -lkU /var/run/fluentd.sock"
+#    volumes:
+#      - /tmp:/var/run
