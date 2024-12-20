@@ -23,3 +23,5 @@ so_far = time_in_secods * steady_rate
 
 for i in range(so_far, so_far + burst + 1):
     print_event(i)
+
+time.sleep(10)
